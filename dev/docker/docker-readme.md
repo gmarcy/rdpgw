@@ -21,7 +21,7 @@ across the different instances if this is not what you want.
 
 ## Configuration through environment variables
 ```bash
-docker --run name rdpgw bolkedebruin/rdpgw:latest \
+docker --run name rdpgw ghcr.io/gmarcy/rdpgw:latest \
   -e RDPGW_SERVER__CERT_FILE=/etc/rdpgw/cert.pem
   -e RDPGW_SERVER__KEY_FILE=/etc/rdpgw.cert.pem
   -e RDPGW_SERVER__GATEWAY_ADDRESS=https://localhost:443

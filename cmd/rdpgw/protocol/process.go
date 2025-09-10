@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/bolkedebruin/rdpgw/cmd/rdpgw/identity"
+	"github.com/gmarcy/rdpgw/cmd/rdpgw/identity"
 )
 
 type Processor struct {

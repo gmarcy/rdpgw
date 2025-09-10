@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/bolkedebruin/rdpgw/cmd/rdpgw/security"
+	"github.com/gmarcy/rdpgw/cmd/rdpgw/security"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/confmap"
 	"github.com/knadh/koanf/providers/env"
@@ -25,13 +25,11 @@ const (
 
 	AuthenticationOpenId   = "openid"
 	AuthenticationBasic    = "local"
-	AuthenticationKerberos = "kerberos"
 )
 
 type Configuration struct {
 	Server   ServerConfig   `koanf:"server"`
 	OpenId   OpenIDConfig   `koanf:"openid"`
-	Kerberos KerberosConfig `koanf:"kerberos"`
 	Caps     RDGCapsConfig  `koanf:"caps"`
 	Security SecurityConfig `koanf:"security"`
 	Client   ClientConfig   `koanf:"client"`
@@ -54,11 +52,6 @@ type ServerConfig struct {
 	Authentication       []string `koanf:"authentication"`
 	AuthSocket           string   `koanf:"authsocket"`
 	BasicAuthTimeout     int      `koanf:"basicauthtimeout"`
-}
-
-type KerberosConfig struct {
-	Keytab   string `koanf:"keytab"`
-	Krb5Conf string `koanf:"krb5conf"`
 }
 
 type OpenIDConfig struct {
@@ -186,7 +179,6 @@ func Load(configFile string) Configuration {
 	k.UnmarshalWithConf("Caps", &Conf.Caps, koanfTag)
 	k.UnmarshalWithConf("Security", &Conf.Security, koanfTag)
 	k.UnmarshalWithConf("Client", &Conf.Client, koanfTag)
-	k.UnmarshalWithConf("Kerberos", &Conf.Kerberos, koanfTag)
 
 	if len(Conf.Security.PAATokenEncryptionKey) != 32 {
 		Conf.Security.PAATokenEncryptionKey, _ = security.GenerateRandomString(32)
@@ -223,16 +215,8 @@ func Load(configFile string) Configuration {
 		log.Fatalf("basicauth=local and tls=disable are mutually exclusive")
 	}
 
-	if Conf.Server.NtlmEnabled() && Conf.Server.KerberosEnabled() {
-		log.Fatalf("ntlm and kerberos authentication are not stackable")
-	}
-
 	if !Conf.Caps.TokenAuth && Conf.Server.OpenIDEnabled() {
 		log.Fatalf("openid is configured but tokenauth disabled")
-	}
-
-	if Conf.Server.KerberosEnabled() && Conf.Kerberos.Keytab == "" {
-		log.Fatalf("kerberos is configured but no keytab was specified")
 	}
 
 	// prepend '//' if required for URL parsing
@@ -245,10 +229,6 @@ func Load(configFile string) Configuration {
 
 func (s *ServerConfig) OpenIDEnabled() bool {
 	return s.matchAuth("openid")
-}
-
-func (s *ServerConfig) KerberosEnabled() bool {
-	return s.matchAuth("kerberos")
 }
 
 func (s *ServerConfig) BasicAuthEnabled() bool {

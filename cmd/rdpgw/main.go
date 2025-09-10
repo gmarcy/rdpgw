@@ -10,14 +10,10 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/bolkedebruin/gokrb5/v8/keytab"
-	"github.com/bolkedebruin/gokrb5/v8/service"
-	"github.com/bolkedebruin/gokrb5/v8/spnego"
-	"github.com/bolkedebruin/rdpgw/cmd/rdpgw/config"
-	"github.com/bolkedebruin/rdpgw/cmd/rdpgw/kdcproxy"
-	"github.com/bolkedebruin/rdpgw/cmd/rdpgw/protocol"
-	"github.com/bolkedebruin/rdpgw/cmd/rdpgw/security"
-	"github.com/bolkedebruin/rdpgw/cmd/rdpgw/web"
+	"github.com/gmarcy/rdpgw/cmd/rdpgw/config"
+	"github.com/gmarcy/rdpgw/cmd/rdpgw/protocol"
+	"github.com/gmarcy/rdpgw/cmd/rdpgw/security"
+	"github.com/gmarcy/rdpgw/cmd/rdpgw/web"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -28,7 +24,6 @@ import (
 
 const (
 	gatewayEndPoint  = "/remoteDesktopGateway/"
-	kdcProxyEndPoint = "/KdcProxy"
 )
 
 var opts struct {
@@ -224,7 +219,7 @@ func main() {
 		r.HandleFunc("/callback", o.HandleCallback)
 
 		// only enable un-auth endpoint for openid only config
-		if !conf.Server.KerberosEnabled() && !conf.Server.BasicAuthEnabled() && !conf.Server.NtlmEnabled() {
+		if !conf.Server.BasicAuthEnabled() && !conf.Server.NtlmEnabled() {
 			rdp.Name("gw").HandlerFunc(gw.HandleGatewayProtocol)
 		}
 	}
@@ -250,24 +245,6 @@ func main() {
 		q := web.BasicAuthHandler{SocketAddress: conf.Server.AuthSocket, Timeout: conf.Server.BasicAuthTimeout}
 		rdp.NewRoute().HeadersRegexp("Authorization", "Basic").HandlerFunc(q.BasicAuth(gw.HandleGatewayProtocol))
 		auth.Register([]string{`Basic realm="restricted", charset="UTF-8"`}, nil)
-	}
-
-	// spnego / kerberos
-	if conf.Server.KerberosEnabled() {
-		log.Printf("enabling kerberos authentication")
-		keytab, err := keytab.Load(conf.Kerberos.Keytab)
-		if err != nil {
-			log.Fatalf("Cannot load keytab: %s", err)
-		}
-		rdp.NewRoute().HeadersRegexp("Authorization", "Negotiate").Handler(
-			spnego.SPNEGOKRB5Authenticate(web.TransposeSPNEGOContext(http.HandlerFunc(gw.HandleGatewayProtocol)),
-				keytab,
-				service.Logger(log.Default())))
-
-		// kdcproxy
-		k := kdcproxy.InitKdcProxy(conf.Kerberos.Krb5Conf)
-		r.HandleFunc(kdcProxyEndPoint, k.Handler).Methods("POST")
-		auth.Register([]string{"Negotiate"}, nil)
 	}
 
 	// setup server

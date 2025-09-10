@@ -1,10 +1,10 @@
 GO Remote Desktop Gateway
 =========================
 
-![Go](https://github.com/bolkedebruin/rdpgw/workflows/Go/badge.svg)
-[![Docker Pulls](https://badgen.net/docker/pulls/bolkedebruin/rdpgw?icon=docker&label=pulls)](https://hub.docker.com/r/bolkedebruin/rdpgw/)
-[![Docker Stars](https://badgen.net/docker/stars/bolkedebruin/rdpgw?icon=docker&label=stars)](https://hub.docker.com/r/bolkedebruin/rdpgw/)
-[![Docker Image Size](https://badgen.net/docker/size/bolkedebruin/rdpgw?icon=docker&label=image%20size)](https://hub.docker.com/r/bolkedebruin/rdpgw/)
+![Go](https://github.com/gmarcy/rdpgw/workflows/Go/badge.svg)
+[![Docker Pulls](https://badgen.net/docker/pulls/gmarcy/rdpgw?icon=docker&label=pulls)](https://hub.docker.com/r/gmarcy/rdpgw/)
+[![Docker Stars](https://badgen.net/docker/stars/gmarcy/rdpgw?icon=docker&label=stars)](https://hub.docker.com/r/gmarcy/rdpgw/)
+[![Docker Image Size](https://badgen.net/docker/size/gmarcy/rdpgw?icon=docker&label=image%20size)](https://hub.docker.com/r/gmarcy/rdpgw/)
 
 
 :star: Star us on GitHub — it helps!
@@ -28,18 +28,13 @@ to connect.
 
 The gateway has several security phases. In the authentication phase the client's credentials are
 verified. Depending the authentication mechanism used, the client's credentials are verified against
-an OpenID Connect provider, Kerberos, a local PAM service or a local database.
+an OpenID Connect provider, a local PAM service or a local database.
 
 If OpenID Connect is used the user will
 need to connect to a webpage provided by the gateway to authenticate, which in turn will redirect
 the user to the OpenID Connect provider. If the authentication is successful the browser will download
 a RDP file with temporary credentials that allow the user to connect to the gateway by using a remote
 desktop client.
-
-If Kerberos is used the client will need to have a valid ticket granting ticket (TGT). The gateway
-will proxy the TGT request to the KDC. Therefore, the gateway needs to be able to connect to the KDC
-and a krb5.conf file needs to be provided. The proxy works without the need for an RDP file and thus
-the client can connect directly to the gateway.
 
 If local authentication is used the client will need to provide a username and password that is verified
 against PAM. This requires, to ensure privilege separation, that ```rdpgw-auth``` is also running and a
@@ -61,7 +56,7 @@ settings.
 ## Authentication
 
 RDPGW wants to be secure when you set it up from the start. It supports several authentication
-mechanisms such as OpenID Connect, Kerberos, PAM or NTLM.
+mechanisms such as OpenID Connect, PAM or NTLM.
 
 Technically, cookies are encrypted and signed on the client side relying
 on [Gorilla Sessions](https://www.gorillatoolkit.org/pkg/sessions). PAA tokens (gateway access tokens)
@@ -75,8 +70,8 @@ if you want.
 
 ### Mixing authentication mechanisms
 
-It is technically possible to mix authentication mechanisms. Currently, you can mix local with Kerberos or NTLM. If you enable 
-OpenID Connect it is not possible to mix it with local or Kerberos at the moment.
+It is technically possible to mix authentication mechanisms. Currently, you can mix local with NTLM. If you enable
+OpenID Connect it is not possible to mix it with local at the moment.
 
 ### Open ID Connect
 ![OpenID Connect](docs/images/flow-openid.svg)
@@ -104,41 +99,6 @@ As you can see in the flow diagram when using OpenID Connect the user will use a
 https://your-gateway/connect. If authentication is successful the browser will download a RDP file with temporary credentials
 that allow the user to connect to the gateway by using a remote desktop client.
 
-### Kerberos
-![Kerberos](docs/images/flow-kerberos.svg)
-
-__NOTE__: Kerberos is heavily reliant on DNS (forward and reverse). Make sure that your DNS is properly configured. 
-Next to that, its errors  are not always very descriptive. It is beyond the scope of this project to provide a full 
-Kerberos tutorial.
-
-To use Kerberos make sure you have a keytab and krb5.conf file. The keytab is used to authenticate the gateway to the KDC
-and the krb5.conf file is used to configure the KDC. The keytab needs to contain a valid principal for the gateway. 
-
-Use `ktutil` or a similar tool provided by your Kerberos server to create a keytab file for the newly created service principal.
-Place this keytab file in a secure location on the server and make sure that the file is only readable by the user that runs
-the gateway.
-
-```plaintext
-ktutil
-addent -password -p HTTP/rdpgw.example.com@YOUR.REALM -k 1 -e aes256-cts-hmac-sha1-96
-wkt rdpgw.keytab
-```
-
-Then set the following in the configuration file.
-
-```yaml
-Server:
-  Authentication:
-    - kerberos
-Kerberos:
-    Keytab: /etc/keytabs/rdpgw.keytab
-    Krb5conf: /etc/krb5.conf
-Caps:
-  TokenAuth: false
-```
-
-The client can then connect directly to the gateway without the need for a RDP file.
-
 
 ### PAM / Local (Basic Auth)
 ![PAM](docs/images/flow-pam.svg)
@@ -149,10 +109,10 @@ but it also supports LDAP authentication or even Active Directory if you have th
 `rdpgw-auth` that is used to authenticate the user. This program needs to be run as root or setuid.
 
 __NOTE__: The default windows client ``mstsc`` does not support basic auth. You will need to use a different client or
-switch to OpenID Connect, Kerberos or NTLM authentication.
+switch to OpenID Connect or NTLM authentication.
 
 __NOTE__: Using PAM for passwd (i.e. LDAP is fine) within a container is not recommended. It is better to use OpenID 
-Connect or Kerberos. If you do want to use it within a container you can choose to run the helper program outside the 
+Connect. If you do want to use it within a container you can choose to run the helper program outside the
 container and have the socket available within. Alternatively, you can mount all what is needed into the container but 
 PAM is quite sensitive to the environment.
 
@@ -244,14 +204,12 @@ TLS termination.
 ```yaml
 # web server configuration. 
 Server:
- # can be set to openid, kerberos, local and ntlm. If openid is used rdpgw expects
+ # can be set to openid, local and ntlm. If openid is used rdpgw expects
  # a configured openid provider, make sure to set caps.tokenauth to true. If local
  # rdpgw connects to rdpgw-auth over a socket to verify users and password. Note:
- # rdpgw-auth needs to be run as root or setuid in order to work. If kerberos is
- # used a keytab and krb5conf need to be supplied. local can be stacked with 
- # kerberos or ntlm authentication, so that the clients selects what it wants.
+ # rdpgw-auth needs to be run as root or setuid in order to work. local can be stacked with
+ # ntlm authentication, so that the clients selects what it wants.
  Authentication:
-  # - kerberos
   # - local
   - openid
   # - ntlm
@@ -299,9 +257,6 @@ OpenId:
  ProviderUrl: http://keycloak/auth/realms/test
  ClientId: rdpgw
  ClientSecret: your-secret
-# Kerberos:
-#  Keytab: /etc/keytabs/rdpgw.keytab
-#  Krb5conf: /etc/krb5.conf
 #  enabled / disabled capabilities
 Caps:
  SmartCardAuth: false
@@ -353,7 +308,7 @@ Security:
 
 ## How to build & install
 
-__NOTE__: a [docker image](https://hub.docker.com/r/bolkedebruin/rdpgw/) is available on docker hub, which removes the need for building and installing go.
+__NOTE__: a [docker image](https://hub.docker.com/r/gmarcy/rdpgw/) is available on docker hub, which removes the need for building and installing go.
 
 Ensure that you have `make` (comes with standard build tools, like `build-essential` on Debian), `go` (version 1.19 or above), and development files for PAM (`libpam0g-dev` on Debian) installed.
 
@@ -406,13 +361,13 @@ https://yourserver/tokeninfo . The query parameter is 'access_token' so
 you can just do a GET to https://yourserver/tokeninfo?access_token=<token> .
 It will return 200 OK with the decrypted token.
 
-In this way you can integrate, for example, it with [pam-jwt](https://github.com/bolkedebruin/pam-jwt).
+In this way you can integrate, for example, it with [pam-jwt](https://github.com/gmarcy/pam-jwt).
 
 ## Client Caveats
 The several clients that Microsoft provides come with their own caveats. 
 The most important one is that the default client on Windows ``mstsc`` does 
-not support basic authentication. This means you need to use either OpenID Connect,
-Kerberos or ntlm authentication.
+not support basic authentication. This means you need to use either OpenID Connect
+or ntlm authentication.
 
 In addition to that, ``mstsc``, when configuring a gateway directly in the client requires
 you to either:
@@ -428,7 +383,7 @@ but it requires that the username and password used for authentication are the s
 both the gateway and the RDP host.
 
 The Microsoft Remote Desktop Client for Mac does not have these issues and is the most flexible.
-It supports basic authentication, OpenID Connect and Kerberos and can use different credentials
+It supports basic authentication and OpenID Connect and can use different credentials
 
 The official Microsoft IOS and Android clients seem also more flexible.
 
