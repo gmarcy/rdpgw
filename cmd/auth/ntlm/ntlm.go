@@ -3,8 +3,8 @@ package ntlm
 import (
         "encoding/base64"
         "errors"
-	"github.com/bolkedebruin/rdpgw/cmd/auth/database"
-	"github.com/bolkedebruin/rdpgw/shared/auth"
+	"github.com/gmarcy/rdpgw/cmd/auth/database"
+	"github.com/gmarcy/rdpgw/shared/auth"
         "github.com/patrickmn/go-cache"
         "github.com/m7913d/go-ntlm/ntlm"
 	"fmt"

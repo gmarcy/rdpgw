@@ -1,10 +1,10 @@
 GO Remote Desktop Gateway
 =========================
 
-![Go](https://github.com/bolkedebruin/rdpgw/workflows/Go/badge.svg)
-[![Docker Pulls](https://badgen.net/docker/pulls/bolkedebruin/rdpgw?icon=docker&label=pulls)](https://hub.docker.com/r/bolkedebruin/rdpgw/)
-[![Docker Stars](https://badgen.net/docker/stars/bolkedebruin/rdpgw?icon=docker&label=stars)](https://hub.docker.com/r/bolkedebruin/rdpgw/)
-[![Docker Image Size](https://badgen.net/docker/size/bolkedebruin/rdpgw?icon=docker&label=image%20size)](https://hub.docker.com/r/bolkedebruin/rdpgw/)
+![Go](https://github.com/gmarcy/rdpgw/workflows/Go/badge.svg)
+[![Docker Pulls](https://badgen.net/docker/pulls/gmarcy/rdpgw?icon=docker&label=pulls)](https://hub.docker.com/r/gmarcy/rdpgw/)
+[![Docker Stars](https://badgen.net/docker/stars/gmarcy/rdpgw?icon=docker&label=stars)](https://hub.docker.com/r/gmarcy/rdpgw/)
+[![Docker Image Size](https://badgen.net/docker/size/gmarcy/rdpgw?icon=docker&label=image%20size)](https://hub.docker.com/r/gmarcy/rdpgw/)
 
 
 :star: Star us on GitHub — it helps!
@@ -76,7 +76,7 @@ if you want.
 
 ### Mixing authentication mechanisms
 
-It is technically possible to mix authentication mechanisms. Currently, you can mix local with Kerberos or NTLM. If you enable 
+It is technically possible to mix authentication mechanisms. Currently, you can mix local with Kerberos or NTLM. If you enable
 OpenID Connect it is not possible to mix it with local or Kerberos at the moment.
 
 ### OpenID Connect
@@ -135,7 +135,7 @@ Server:
  # a configured openid provider, make sure to set caps.tokenauth to true. If local
  # rdpgw connects to rdpgw-auth over a socket to verify users and password. Note:
  # rdpgw-auth needs to be run as root or setuid in order to work. If kerberos is
- # used a keytab and krb5conf need to be supplied. local can be stacked with 
+ # used a keytab and krb5conf need to be supplied. local can be stacked with
  # kerberos or ntlm authentication, so that the clients selects what it wants.
  Authentication:
   # - kerberos
@@ -240,7 +240,7 @@ Security:
 
 ## How to build & install
 
-__NOTE__: a [docker image](https://hub.docker.com/r/bolkedebruin/rdpgw/) is available on docker hub, which removes the need for building and installing go.
+__NOTE__: a [docker image](https://hub.docker.com/r/gmarcy/rdpgw/) is available on docker hub, which removes the need for building and installing go.
 
 Ensure that you have `make` (comes with standard build tools, like `build-essential` on Debian), `go` (version 1.19 or above), and development files for PAM (`libpam0g-dev` on Debian) installed.
 
@@ -293,7 +293,7 @@ https://yourserver/tokeninfo . The query parameter is 'access_token' so
 you can just do a GET to https://yourserver/tokeninfo?access_token=<token> .
 It will return 200 OK with the decrypted token.
 
-In this way you can integrate, for example, it with [pam-jwt](https://github.com/bolkedebruin/pam-jwt).
+In this way you can integrate, for example, it with [pam-jwt](https://github.com/gmarcy/pam-jwt).
 
 ## Client Caveats
 The several clients that Microsoft provides come with their own caveats. 

@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/bolkedebruin/rdpgw/cmd/rdpgw/identity"
-	"github.com/bolkedebruin/rdpgw/cmd/rdpgw/transport"
+	"github.com/gmarcy/rdpgw/cmd/rdpgw/identity"
+	"github.com/gmarcy/rdpgw/cmd/rdpgw/transport"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/patrickmn/go-cache"

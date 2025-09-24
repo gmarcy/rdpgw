@@ -4,7 +4,7 @@ services:
   xrdp:
     container_name: xrdp
     hostname: xrdp
-    image: bolkedebruin/docker-ubuntu-xrdp-mate-rdpgw:latest
+    image: ghcr.io/gmarcy/docker-ubuntu-xrdp-mate-rdpgw:latest
     ports:
       - 3389:3389
     restart: on-failure
@@ -15,7 +15,7 @@ services:
   rdpgw:
     container_name: rdpgw
     hostname: rdpgw
-    image: bolkedebruin/rdpgw:latest
+    image: ghcr.io/gmarcy/rdpgw:latest
     build: .
     ports:
       - 9443:9443

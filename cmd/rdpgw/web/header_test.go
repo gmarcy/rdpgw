@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bolkedebruin/rdpgw/cmd/rdpgw/identity"
+	"github.com/gmarcy/rdpgw/cmd/rdpgw/identity"
 )
 
 func init() {
