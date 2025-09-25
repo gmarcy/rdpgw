@@ -18,8 +18,8 @@ RUN mkdir -p /opt/rdpgw && cd /opt/rdpgw && \
     openssl x509 -req -days 365 -in server.csr -signkey key.pem -out server.pem
 
 # build rdpgw and set rights
-ARG CACHEBUST
-RUN git clone https://github.com/bolkedebruin/rdpgw.git /app && \
+ARG CACHEBUST=1
+RUN git clone https://github.com/gmarcy/rdpgw.git /app && \
     cd /app && \
     go mod tidy -compat=1.19 && \
     CGO_ENABLED=0 GOOS=linux go build -trimpath -tags '' -ldflags '' -o '/opt/rdpgw/rdpgw' ./cmd/rdpgw && \

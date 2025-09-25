@@ -1,6 +1,6 @@
 package protocol
 
-import "github.com/bolkedebruin/rdpgw/cmd/rdpgw/transport"
+import "github.com/gmarcy/rdpgw/cmd/rdpgw/transport"
 
 type packetReader struct {
 	in      transport.Transport
