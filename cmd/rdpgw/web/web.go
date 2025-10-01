@@ -20,8 +20,8 @@ import (
 	"time"
 
 	"github.com/andrewheberle/rdpsign"
-	"github.com/bolkedebruin/rdpgw/cmd/rdpgw/identity"
-	"github.com/bolkedebruin/rdpgw/cmd/rdpgw/rdp"
+	"github.com/gmarcy/rdpgw/cmd/rdpgw/identity"
+	"github.com/gmarcy/rdpgw/cmd/rdpgw/rdp"
 )
 
 type TokenGeneratorFunc func(context.Context, string, string) (string, error)

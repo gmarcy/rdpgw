@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/bolkedebruin/rdpgw/cmd/rdpgw/identity"
+	"github.com/gmarcy/rdpgw/cmd/rdpgw/identity"
 )
 
 type Header struct {

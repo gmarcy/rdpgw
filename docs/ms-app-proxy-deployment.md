@@ -130,7 +130,7 @@ Client:
 # docker-compose.yml
 services:
   rdpgw:
-    image: bolkedebruin/rdpgw:latest
+    image: ghcr.io/gmarcy/rdpgw:latest
     ports:
       - "80:443"
     volumes:

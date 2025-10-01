@@ -1,4 +1,4 @@
-module github.com/bolkedebruin/rdpgw
+module github.com/gmarcy/rdpgw
 
 go 1.24.2
 

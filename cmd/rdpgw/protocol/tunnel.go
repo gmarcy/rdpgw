@@ -4,12 +4,12 @@ import (
 	"net"
 	"time"
 
-	"github.com/bolkedebruin/rdpgw/cmd/rdpgw/identity"
-	"github.com/bolkedebruin/rdpgw/cmd/rdpgw/transport"
+	"github.com/gmarcy/rdpgw/cmd/rdpgw/identity"
+	"github.com/gmarcy/rdpgw/cmd/rdpgw/transport"
 )
 
 const (
-	CtxTunnel = "github.com/bolkedebruin/rdpgw/tunnel"
+	CtxTunnel = "github.com/gmarcy/rdpgw/tunnel"
 )
 
 type Tunnel struct {
