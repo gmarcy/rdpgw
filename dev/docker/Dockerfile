@@ -30,7 +30,7 @@ RUN git clone https://github.com/gmarcy/rdpgw.git /app && \
 
 FROM alpine:latest
 # Install CA certificates in final stage
-RUN apk --no-cache add linux-pam musl tzdata ca-certificates && update-ca-certificates
+RUN apk --no-cache add curl linux-pam musl tzdata ca-certificates && update-ca-certificates
 
 # make tempdir in case filestore is used
 ADD tmp.tar /
